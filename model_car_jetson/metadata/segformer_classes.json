@@ -1,0 +1,17 @@
+{
+  "ignore_index": 255,
+  "classes": [
+    {
+      "id": 0,
+      "name": "background"
+    },
+    {
+      "id": 1,
+      "name": "yellow_solid_line"
+    },
+    {
+      "id": 2,
+      "name": "yellow_dashed_line"
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+# Main lane-following runtime config.
+#
+# Normal usage:
+#   ./lane_following/run.sh
+#
+# lane_only_drive true: motors follow only the lane estimate. YOLO still runs
+# for visualization/logging, but signs do not override the wheel command.
+#
+# lane_only_drive false: the canonical FSM at
+# ../../rule_based/scripts/rule_based_driving.py combines lane + detections.
+
+camera:
+  type: csi
+  sensor_id: 0
+  width: 1280
+  height: 720
+  fps: 30
+
+preview:
+  # SSH/web preview. "detection" sends only the latest bbox frame; no MJPEG queue.
+  enabled: false
+  host: 0.0.0.0
+  port: 8081
+  no_display: true
+  mode: detection
+  stream_fps: 1.0
+  stream_width: 640
+  jpeg_quality: 55
+
+hardware:
+  arm: true
+  serial: /dev/ttyUSB0
+  baud: 115200
+
+models:
+  device: auto
+  half: true
+  model_width: 512
+  model_height: 288
+  yolo_device: auto
+  imgsz: 512
+  conf: 0.25
+  detect_every: 5
+
+lane:
+  lane_only_drive: false
+  route_override: auto
+  #control_mode: pure_pursuit
+  control_mode: lateral_heading
+  nominal_lane_width_px: 220.0
+  base_speed: 0.20
+  pure_pursuit_gain: 0.53
+  lookahead_y_ratio: 0.40
+  # Camera is mounted slightly right of the rover center.
+  # Negative means the rover center is BEV-left of camera center; 0.0 restores legacy behavior.
+  vehicle_center_x_bias: -0.03
+
+  lateral_gain: 0.43 #0.45
+  heading_gain: 0.64 #0.65
+  steer_smoothing: 0.47
+  min_drive_confidence: 0.02
+  # Route-aware dashed target selection inside roundabouts.
+  # Negative x is BEV-left, positive x is BEV-right.
+  roundabout_route_aware: true
+  roundabout_approach_x_bias: 0.22
+  roundabout_left_circulate_x_bias: -0.17
+  roundabout_right_circulate_x_bias: 0.20
+  roundabout_left_exit_x_bias: 0.24
+  roundabout_right_exit_x_bias: 0.20
+  roundabout_route_select_strength: 0.75
+  roundabout_route_far_weight: 1.40
+  roundabout_route_center_smoothing: 0.30
+
+fsm:
+  # strict: only the current mission phase can react.
+  # soft: traffic light can react outside its phase.
+  # off: detection events are not gated by mission phase.
+  map_gate_mode: strict
+
+  # Ordered task switches for one-by-one debugging.
+  # If a stage is false, the FSM skips that stage and moves to the next one.
+  tasks:
+    ra1_route_sign: true
+    ra1_roundabout: true
+    side_sign_1: true
+    traffic_light: true
+    side_sign_2: false
+    ra2_route_sign: true
+    ra2_roundabout: true
+    stop_sign: true
+    pedestrian_sign: true
+    toy_car_yield: true
+
+  detection:
+    detection_confirm_hits: 1
+    detection_memory_hold_sec: 1.0
+    detection_max_misses: 5
+    sign_conf: 0.25
+    traffic_stop_conf: 0.30             # traffic
+    traffic_green_conf: 0.25
+
+  # area values are normalized bbox area / image area.
+  # bottom_y values are normalized bbox bottom position, top=0.0 bottom=1.0.
+  filters:
+    route_sign_min_area: 0.005
+    route_sign_min_bottom_y: 0.08
+    stop_sign_min_area: 0.008
+    stop_sign_min_bottom_y: 0.00
+    pedestrian_sign_min_area: 0.008
+    pedestrian_sign_min_bottom_y: 0.00
+    traffic_light_min_area: 0.0022
+    traffic_color_min_area: 0.0009       #traffic
+    traffic_color_max_aspect_ratio: 1.8   # red/green/orange lamp bbox must be near-square. 0 disables.
+    traffic_light_min_bottom_y: 0.00
+    obstacle_stop_conf: 0.30              # toy car
+    camera_distance_scale: 1.0
+    obstacle_area_min: 0.01               
+    obstacle_height_min: 0.35             # toy car bbox height / image height. 0 disables.
+    obstacle_bottom_y_min: 0
+    obstacle_x_min: 0                   # toy car 
+    obstacle_x_max: 1                  # toy car 
+
+  timing:
+    side_sign_zone_timeout_sec: 5.5
+    post_sign_lane_follow_sec: 6.2
+    post_traffic_lane_follow_sec: 12.0
+    ra2_route_sign_timeout_sec: 3.0
+    intersection_cross_sec: 2.2
+    roundabout_to_side_sec: 8.4
+    stop_approach_sec: 1.0
+    stop_hold_sec: 2.5
+    stop_cooldown_sec: 10.0
+    pedestrian_hold_sec: 6.0
+    traffic_clear_confirm_sec: 0.6
+    traffic_planning_window_sec: 10.0
+    roundabout_approach_sec: 2.5
+    roundabout_entry_yield_timeout_sec: 4.0
+    roundabout_left_sec: 6.0
+    roundabout_right_sec: 1.5
+    roundabout_exit_sec: 1.0
+    roundabout_ra2_left_exit_sec: 0.8
+    roundabout_ra2_right_exit_sec: 0.5
+    lane_lost_scan_right_sec: 1.2       # normal lane-lost in-place right turn duration
+    lane_lost_scan_left_sec: 1.2        # normal lane-lost in-place left turn duration
+    roundabout_sign_cooldown_sec: 10.0
+    roundabout_yield_clear_sec: 0.0
+
+  behavior:
+    pedestrian_speed_limit: 0.02
+    roundabout_speed_limit: 0.2 
+    roundabout_approach_steer_bias: 0.15
+    roundabout_left_circulate_steer_bias: -0.14
+    roundabout_right_circulate_steer_bias: 0.18
+    roundabout_left_exit_steer_bias: 0.12
+    roundabout_right_exit_steer_bias: 0.18
+    roundabout_lane_lost_recovery_steer: -0.30 # recovery
+    roundabout_lane_lost_recovery_speed: 0.10  # recovery
+    lane_lost_scan_turn_speed: 0.21            # recovery
+    # General lane-lost scan direction selection weights after the first roundabout route is known.
+    # Actual scan time also depends on lane_lost_scan_left_sec/right_sec above.
+    # first_route=right => left:right = 9:1, first_route=left => left:right = 1:9.
+    lane_lost_scan_first_right_left_weight: 9.0
+    lane_lost_scan_first_right_right_weight: 1.0
+    lane_lost_scan_first_left_left_weight: 1.0
+    lane_lost_scan_first_left_right_weight: 9.0
+    roundabout_ra1_circulate_bias: 0.0
+    roundabout_ra2_circulate_bias: 0.0
+    roundabout_left_steer_bias: 0.0
+    roundabout_right_steer_bias: 0.0
+    max_steer_bias: 0.35
+
+rover:
+  max_wheel_speed: 0.60
+  speed_gain: 1.10
+  steer_mix: 1.12
+  min_forward_speed: 0.15
+  turn_in_place_threshold: 0.960
+  min_inner_wheel_ratio: 0.001
+  repeat_last_command: true
+  command_rate_hz: 30.0
+  invert_left: false
+  invert_right: false
+
+fault_tolerance:
+  # 0 disables the corresponding protection. This only softens lane perception
+  # dropouts; stop signs, red lights, and explicit yields still brake immediately.
+  lane_lost_grace_sec: 0.40
+  lane_lost_speed_scale: 0.55
+  lane_lost_min_speed: 0.07
+  max_steer_delta_per_frame: 0.30
+
+runtime:
+  threaded_capture: true
+  print_every: 5
+  max_frames: 0
+  save_video: false

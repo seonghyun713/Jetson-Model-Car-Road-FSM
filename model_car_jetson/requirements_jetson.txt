@@ -1,0 +1,8 @@
+numpy<2
+pillow
+safetensors
+transformers==4.35.2
+pyyaml
+# Jetson uses the JetPack/OpenCV apt package for CSI camera + GStreamer.
+# Install Ultralytics separately with --no-deps if the detection smoke test is needed:
+# python3 -m pip install --no-deps ultralytics

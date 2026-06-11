@@ -1,0 +1,11 @@
+{
+  "0": "red_stop_sign",
+  "1": "blue_right_turn_sign",
+  "2": "blue_left_turn_sign",
+  "3": "traffic_light_red",
+  "4": "traffic_light_green",
+  "5": "traffic_light_orange",
+  "6": "toy_car",
+  "7": "yellow_pedestrian_warning_sign",
+  "8": "traffic_light"
+}

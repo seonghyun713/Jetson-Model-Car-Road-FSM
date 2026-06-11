@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860" role="img" aria-labelledby="title desc">
+  <title id="title">Model Car Perception and Control Model Stack</title>
+  <desc id="desc">Detailed stack showing SegFormer lane segmentation, YOLO object detection, lane estimate construction, FSM planning, and final wheel command generation.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#22313f"/>
+    </marker>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#1b2934" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .bg { fill: #fbfbfc; }
+      .title { font: 700 34px Arial, sans-serif; fill: #16212c; }
+      .subtitle { font: 400 16px Arial, sans-serif; fill: #586979; }
+      .group { rx: 18; fill: #ffffff; stroke: #dfe6ec; stroke-width: 2; filter: url(#shadow); }
+      .chip { rx: 11; }
+      .chipText { font: 700 12px Arial, sans-serif; fill: #ffffff; }
+      .box { rx: 12; fill: #ffffff; stroke-width: 2; }
+      .input { fill: #eaf3ff; stroke: #78aee8; }
+      .model { fill: #eaf7ef; stroke: #66bd83; }
+      .state { fill: #fff5df; stroke: #e2ab47; }
+      .output { fill: #ffeceb; stroke: #de7770; }
+      .label { font: 700 18px Arial, sans-serif; fill: #17212b; }
+      .body { font: 400 14px Arial, sans-serif; fill: #3f5162; }
+      .tiny { font: 400 12px Arial, sans-serif; fill: #67798a; }
+      .line { fill: none; stroke: #22313f; stroke-width: 3; marker-end: url(#arrow); }
+      .dash { fill: none; stroke: #708394; stroke-width: 2.5; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1400" height="860"/>
+  <text class="title" x="54" y="66">Model Car Model Stack</text>
+  <text class="subtitle" x="56" y="96">The learned perception models stay separate from the hand-tuned mission logic and safety mixer.</text>
+
+  <rect class="group" x="58" y="142" width="392" height="594"/>
+  <rect class="chip" x="82" y="166" width="96" height="24" fill="#3478bd"/>
+  <text class="chipText" x="104" y="183">INPUT</text>
+  <text class="label" x="82" y="222">Camera Frame</text>
+  <text class="body" x="82" y="248">CSI/USB frame</text>
+  <text class="tiny" x="82" y="270">capture_width x capture_height</text>
+
+  <rect class="box input" x="88" y="314" width="300" height="94"/>
+  <text class="label" x="110" y="350">Runtime Wrapper</text>
+  <text class="body" x="110" y="376">lane_following/run.py</text>
+  <text class="tiny" x="110" y="396">YAML config to runner arguments</text>
+
+  <rect class="box input" x="88" y="480" width="300" height="110"/>
+  <text class="label" x="110" y="518">Tunable Config</text>
+  <text class="body" x="110" y="544">camera, models, lane, FSM, rover</text>
+  <text class="tiny" x="110" y="566">single edit surface for experiments</text>
+
+  <rect class="group" x="510" y="142" width="388" height="594"/>
+  <rect class="chip" x="534" y="166" width="118" height="24" fill="#39945a"/>
+  <text class="chipText" x="552" y="183">PERCEPTION</text>
+
+  <rect class="box model" x="544" y="216" width="310" height="122"/>
+  <text class="label" x="566" y="252">SegFormer-B0</text>
+  <text class="body" x="566" y="278">Input resize: 512 x 288</text>
+  <text class="body" x="566" y="302">Output: yellow-line mask</text>
+  <text class="tiny" x="566" y="322">dashed centerline used for path target</text>
+
+  <rect class="box model" x="544" y="394" width="310" height="126"/>
+  <text class="label" x="566" y="430">YOLOv8s Detector</text>
+  <text class="body" x="566" y="456">Input imgsz: 512</text>
+  <text class="body" x="566" y="480">Output: class, bbox, confidence</text>
+  <text class="tiny" x="566" y="500">stop, route, traffic, obstacle classes</text>
+
+  <rect class="box state" x="544" y="578" width="310" height="96"/>
+  <text class="label" x="566" y="614">Runtime State</text>
+  <text class="body" x="566" y="640">LaneEstimate + DetectionSnapshot</text>
+  <text class="tiny" x="566" y="660">temporal filtering and confidence gates</text>
+
+  <rect class="group" x="958" y="142" width="384" height="594"/>
+  <rect class="chip" x="982" y="166" width="112" height="24" fill="#b77711"/>
+  <text class="chipText" x="1002" y="183">PLANNING</text>
+
+  <rect class="box state" x="992" y="216" width="306" height="122"/>
+  <text class="label" x="1014" y="252">BEV Lane Controller</text>
+  <text class="body" x="1014" y="278">Perspective warp and row sampling</text>
+  <text class="body" x="1014" y="302">lateral + heading or pure pursuit</text>
+  <text class="tiny" x="1014" y="322">steer, speed, confidence</text>
+
+  <rect class="box state" x="992" y="394" width="306" height="126"/>
+  <text class="label" x="1014" y="430">Mission FSM</text>
+  <text class="body" x="1014" y="456">RA1/RA2, traffic, stop, pedestrian</text>
+  <text class="body" x="1014" y="480">obstacle global stop</text>
+  <text class="tiny" x="1014" y="500">outputs brake or route-aware drive command</text>
+
+  <rect class="box output" x="992" y="578" width="306" height="96"/>
+  <text class="label" x="1014" y="614">Safety + Motor Output</text>
+  <text class="body" x="1014" y="640">lane-loss hold, steer delta limiter</text>
+  <text class="tiny" x="1014" y="660">left/right wheel command over serial</text>
+
+  <path class="line" d="M388 361 C448 361, 470 277, 544 277"/>
+  <path class="line" d="M388 361 C448 361, 470 457, 544 457"/>
+  <path class="dash" d="M388 535 C460 535, 470 626, 544 626"/>
+  <path class="line" d="M854 277 C910 277, 930 277, 992 277"/>
+  <path class="line" d="M854 457 C910 457, 930 457, 992 457"/>
+  <path class="line" d="M854 626 C910 626, 930 626, 992 626"/>
+  <path class="line" d="M1145 338 L1145 394"/>
+  <path class="line" d="M1145 520 L1145 578"/>
+
+  <text class="tiny" x="424" y="300">frame</text>
+  <text class="tiny" x="424" y="450">frame</text>
+  <text class="tiny" x="910" y="260">mask</text>
+  <text class="tiny" x="910" y="440">detections</text>
+  <text class="tiny" x="1158" y="364">lane command</text>
+  <text class="tiny" x="1158" y="548">drive command</text>
+</svg>

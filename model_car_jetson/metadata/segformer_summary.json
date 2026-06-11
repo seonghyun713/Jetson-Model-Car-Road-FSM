@@ -1,0 +1,20 @@
+{
+  "best_epoch": 78,
+  "best_line_miou": 0.8752501817703975,
+  "test_metrics": {
+    "iou_background": 0.9931624798067891,
+    "iou_yellow_solid_line": 0.8912304876154195,
+    "iou_yellow_dashed_line": 0.8597443646021943,
+    "miou": 0.9147124440081343,
+    "line_miou": 0.8754874261088068,
+    "pixel_acc": 0.9930413071689114
+  },
+  "val_metrics_best_preview": {
+    "iou_background": 0.993185806572603,
+    "iou_yellow_solid_line": 0.8765765917382385,
+    "iou_yellow_dashed_line": 0.8739237718025564,
+    "miou": 0.914562056704466,
+    "line_miou": 0.8752501817703975,
+    "pixel_acc": 0.9928899180608165
+  }
+}

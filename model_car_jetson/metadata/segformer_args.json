@@ -1,0 +1,14 @@
+{
+  "data_dir": "/home/seonghyun/auto_labeling/datasets/model_car/segformer_b0_yellow_line_v1",
+  "output_dir": "/home/seonghyun/auto_labeling/runs/model_car_segmentation/segformer_b0_yellow_line_v1",
+  "model_name": "nvidia/segformer-b0-finetuned-ade-512-512",
+  "width": 768,
+  "height": 432,
+  "epochs": 80,
+  "batch_size": 4,
+  "lr": 6e-05,
+  "weight_decay": 0.01,
+  "dice_weight": 0.7,
+  "num_workers": 0,
+  "seed": 42
+}

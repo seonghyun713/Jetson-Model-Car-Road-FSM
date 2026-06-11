@@ -1,0 +1,31 @@
+{
+  "path_mode": "dashed_centerline",
+  "segmentation_classes": {
+    "0": "background",
+    "1": "yellow_solid_line",
+    "2": "yellow_dashed_line"
+  },
+  "model_input": {
+    "width": 768,
+    "height": 432
+  },
+  "bev": {
+    "output_width": 640,
+    "output_height": 720,
+    "src_points_ratio": [
+      [0.08, 0.95],
+      [0.92, 0.95],
+      [0.64, 0.43],
+      [0.36, 0.43]
+    ]
+  },
+  "lane_follower": {
+    "nominal_lane_width_px": 220.0,
+    "base_speed": 0.28,
+    "min_speed": 0.06,
+    "max_speed": 0.35,
+    "lateral_gain": 0.85,
+    "heading_gain": 0.45,
+    "steer_smoothing": 0.62
+  }
+}

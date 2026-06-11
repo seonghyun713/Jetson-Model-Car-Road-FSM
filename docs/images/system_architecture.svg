@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Model Car Jetson System Architecture</title>
+  <desc id="desc">Runtime architecture for camera perception, lane following, road-object FSM, safety mixing, and Wave Rover motor output.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#243746"/>
+    </marker>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#1d2b36" flood-opacity="0.14"/>
+    </filter>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .title { font: 700 34px Arial, sans-serif; fill: #17212b; }
+      .subtitle { font: 400 16px Arial, sans-serif; fill: #546575; }
+      .lane { fill: none; stroke: #243746; stroke-width: 3; marker-end: url(#arrow); }
+      .softLane { fill: none; stroke: #6a7d8f; stroke-width: 2.5; stroke-dasharray: 8 8; marker-end: url(#arrow); }
+      .box { rx: 14; fill: #ffffff; stroke: #d8e0e7; stroke-width: 2; filter: url(#shadow); }
+      .sensor { fill: #e9f3ff; stroke: #7baee6; }
+      .perception { fill: #eaf7ef; stroke: #71bf8a; }
+      .planning { fill: #fff4df; stroke: #e5ad49; }
+      .actuation { fill: #ffeceb; stroke: #e47c77; }
+      .observe { fill: #eef1f4; stroke: #9aa9b5; }
+      .label { font: 700 18px Arial, sans-serif; fill: #17212b; }
+      .body { font: 400 14px Arial, sans-serif; fill: #3f5162; }
+      .tiny { font: 400 12px Arial, sans-serif; fill: #607283; }
+      .tag { font: 700 12px Arial, sans-serif; fill: #ffffff; }
+      .tagSensor { fill: #3478bd; }
+      .tagPerc { fill: #39945a; }
+      .tagPlan { fill: #b77711; }
+      .tagAct { fill: #b84a45; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1400" height="820"/>
+  <text class="title" x="54" y="66">Model Car Jetson Runtime</text>
+  <text class="subtitle" x="56" y="96">SegFormer lane perception + YOLO road-object detection + rule-based mission FSM + skid-steer output</text>
+
+  <rect class="box sensor" x="56" y="160" width="214" height="118"/>
+  <rect class="tagSensor" x="76" y="178" width="72" height="24" rx="12"/>
+  <text class="tag" x="94" y="195">SENSOR</text>
+  <text class="label" x="76" y="226">CSI / USB Camera</text>
+  <text class="body" x="76" y="252">1280x720 frame stream</text>
+  <text class="tiny" x="76" y="272">GStreamer or OpenCV capture</text>
+
+  <rect class="box perception" x="342" y="130" width="246" height="138"/>
+  <rect class="tagPerc" x="362" y="148" width="92" height="24" rx="12"/>
+  <text class="tag" x="377" y="165">PERCEPTION</text>
+  <text class="label" x="362" y="197">SegFormer-B0</text>
+  <text class="body" x="362" y="223">Yellow-line segmentation</text>
+  <text class="tiny" x="362" y="243">512x288, FP16 when CUDA</text>
+
+  <rect class="box perception" x="342" y="324" width="246" height="138"/>
+  <rect class="tagPerc" x="362" y="342" width="92" height="24" rx="12"/>
+  <text class="tag" x="377" y="359">PERCEPTION</text>
+  <text class="label" x="362" y="391">YOLOv8s</text>
+  <text class="body" x="362" y="417">Road-object detection</text>
+  <text class="tiny" x="362" y="437">Signs, traffic lights, toy car</text>
+
+  <rect class="box planning" x="662" y="130" width="250" height="138"/>
+  <rect class="tagPlan" x="682" y="148" width="88" height="24" rx="12"/>
+  <text class="tag" x="700" y="165">CONTROL</text>
+  <text class="label" x="682" y="197">BEV Lane Geometry</text>
+  <text class="body" x="682" y="223">Perspective warp + row sampling</text>
+  <text class="tiny" x="682" y="243">lateral error, heading, confidence</text>
+
+  <rect class="box planning" x="662" y="324" width="250" height="138"/>
+  <rect class="tagPlan" x="682" y="342" width="88" height="24" rx="12"/>
+  <text class="tag" x="700" y="359">CONTROL</text>
+  <text class="label" x="682" y="391">Detection Memory</text>
+  <text class="body" x="682" y="417">Confidence, area, bottom-y filters</text>
+  <text class="tiny" x="682" y="437">temporal confirmation and cooldowns</text>
+
+  <rect class="box planning" x="986" y="226" width="258" height="150"/>
+  <rect class="tagPlan" x="1006" y="244" width="88" height="24" rx="12"/>
+  <text class="tag" x="1024" y="261">MISSION</text>
+  <text class="label" x="1006" y="293">Rule-Based FSM</text>
+  <text class="body" x="1006" y="319">Roundabouts, route signs,</text>
+  <text class="body" x="1006" y="341">stop signs, traffic lights, yield</text>
+  <text class="tiny" x="1006" y="363">strict / soft / off map gating</text>
+
+  <rect class="box actuation" x="986" y="500" width="258" height="132"/>
+  <rect class="tagAct" x="1006" y="518" width="90" height="24" rx="12"/>
+  <text class="tag" x="1024" y="535">SAFETY</text>
+  <text class="label" x="1006" y="568">Wheel Mixer</text>
+  <text class="body" x="1006" y="594">Lane-loss grace, steer clamp,</text>
+  <text class="body" x="1006" y="616">speed gain, differential mix</text>
+
+  <rect class="box actuation" x="1092" y="680" width="250" height="90"/>
+  <text class="label" x="1112" y="718">Wave Rover Serial</text>
+  <text class="body" x="1112" y="746">{"T":1,"L":left,"R":right}</text>
+
+  <rect class="box observe" x="56" y="588" width="324" height="130"/>
+  <text class="label" x="76" y="626">Observability</text>
+  <text class="body" x="76" y="654">Web preview on port 8081</text>
+  <text class="body" x="76" y="678">CSV commands + optional debug video</text>
+  <text class="tiny" x="76" y="700">detection-only preview avoids frame backlog</text>
+
+  <rect class="box observe" x="452" y="588" width="328" height="130"/>
+  <text class="label" x="472" y="626">Single Config Entry</text>
+  <text class="body" x="472" y="654">lane_following/config.yaml</text>
+  <text class="body" x="472" y="678">run.py converts YAML to runner flags</text>
+  <text class="tiny" x="472" y="700">lane-only or full FSM runtime</text>
+
+  <path class="lane" d="M270 219 C295 219, 308 199, 342 199"/>
+  <path class="lane" d="M270 219 C300 265, 300 393, 342 393"/>
+  <path class="lane" d="M588 199 L662 199"/>
+  <path class="lane" d="M588 393 L662 393"/>
+  <path class="lane" d="M912 199 C944 199, 956 282, 986 282"/>
+  <path class="lane" d="M912 393 C944 393, 956 326, 986 326"/>
+  <path class="lane" d="M1115 376 L1115 500"/>
+  <path class="lane" d="M1115 632 L1180 680"/>
+  <path class="softLane" d="M218 588 C240 530, 322 505, 454 462"/>
+  <path class="softLane" d="M616 588 C682 530, 830 500, 986 562"/>
+
+  <text class="tiny" x="596" y="188">mask</text>
+  <text class="tiny" x="596" y="382">detections</text>
+  <text class="tiny" x="926" y="238">lane command</text>
+  <text class="tiny" x="925" y="373">events</text>
+  <text class="tiny" x="1128" y="452">drive command</text>
+</svg>

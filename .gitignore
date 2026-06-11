@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local/editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Runtime outputs
+model_car_jetson/logs/
+logs/
+*.mp4
+*.avi
+*.mov
+
+# Datasets and generated captures
+dataset/
+datasets/
+captures/
+trash/
+
+# Model binaries
+*.pt
+*.pth
+*.safetensors
+*.engine
+*.onnx
+*.ts
+*.plan
+*.bak*
+
+# Keep lightweight model metadata
+!model_car_jetson/weights/
+!model_car_jetson/weights/README.md
+!model_car_jetson/weights/**/
+!model_car_jetson/weights/**/config.json
