@@ -51,15 +51,6 @@ The following media slots are prepared for the course map, rover hardware, perce
 
 > **Demo Slot.** Replace this placeholder by adding `docs/assets/demo.gif`.
 
-Recommended media filenames:
-
-| File | Description |
-| :--- | :--- |
-| `docs/assets/course_map.png` | Road-task course map |
-| `docs/assets/rover_platform.jpg` | Jetson rover hardware photo |
-| `docs/assets/perception_debug.png` | Detection + lane mask + BEV debug view |
-| `docs/assets/demo.gif` | Final driving demo GIF |
-
 #### Course Map
 Add the task course image as:
 
